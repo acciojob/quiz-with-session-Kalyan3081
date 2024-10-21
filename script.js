@@ -1,78 +1,131 @@
-//your JS code here. If required.
-// Function to get a cookie value by name
-function getCookie(name) {
-  const nameEQ = name + "=";
-  const ca = document.cookie.split(";");
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == " ") c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
+// Do not change code below this line
+// This code will just display the questions to the screen
+const questions = [
+  {
+    question: "What is the capital of France?",
+    choices: ["Paris", "London", "Berlin", "Madrid"],
+    answer: "Paris",
+  },
+  {
+    question: "What is the highest mountain in the world?",
+    choices: ["Everest", "Kilimanjaro", "Denali", "Matterhorn"],
+    answer: "Everest",
+  },
+  {
+    question: "What is the largest country by area?",
+    choices: ["Russia", "China", "Canada", "United States"],
+    answer: "Russia",
+  },
+  {
+    question: "Which is the largest planet in our solar system?",
+    choices: ["Earth", "Jupiter", "Mars"],
+    answer: "Jupiter",
+  },
+  {
+    question: "What is the capital of Canada?",
+    choices: ["Toronto", "Montreal", "Vancouver", "Ottawa"],
+    answer: "Ottawa",
+  },
+];
+
+// Selecting HTML elements
+const questionsElement = document.getElementById("questions");
+const submitButton = document.getElementById("submit");
+const scoreElement = document.getElementById("score");
+
+// Initialize userAnswers from sessionStorage or as an empty array
+let userAnswers = [];
+
+// Load progress from sessionStorage
+const savedProgress = sessionStorage.getItem("progress");
+if (savedProgress) {
+  userAnswers = JSON.parse(savedProgress);
+} else {
+  // Initialize userAnswers with nulls
+  userAnswers = Array(questions.length).fill(null);
 }
 
-// Function to set a cookie
-function setCookie(name, value, days) {
-  let expires = "";
-  if (days) {
-    const date = new Date();
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-    expires = "; expires=" + date.toUTCString();
-  }
-  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+// Load score from localStorage
+const savedScore = localStorage.getItem("score");
+if (savedScore !== null) {
+  scoreElement.textContent = `Your score is ${savedScore} out of ${questions.length}.`;
 }
 
-// Function to apply preferences from cookies
-function applyPreferences() {
-  const savedFontSize = getCookie("fontsize");
-  const savedFontColor = getCookie("fontcolor");
+// Function to render questions
+function renderQuestions() {
+  questionsElement.innerHTML = ""; // Clear any existing content
 
-  if (savedFontSize) {
-    document.documentElement.style.setProperty(
-      "--fontsize",
-      savedFontSize + "px"
-    );
-    document.getElementById("fontsize").value = savedFontSize;
-  }
+  for (let i = 0; i < questions.length; i++) {
+    const question = questions[i];
+    const questionContainer = document.createElement("div");
+    questionContainer.classList.add("question-container");
 
-  if (savedFontColor) {
-    document.documentElement.style.setProperty("--fontcolor", savedFontColor);
-    document.getElementById("fontcolor").value = savedFontColor;
+    const questionText = document.createElement("p");
+    questionText.textContent = `${i + 1}. ${question.question}`;
+    questionContainer.appendChild(questionText);
+
+    for (let j = 0; j < question.choices.length; j++) {
+      const choice = question.choices[j];
+      const choiceContainer = document.createElement("div");
+      choiceContainer.classList.add("choice-container");
+
+      const choiceInput = document.createElement("input");
+      choiceInput.setAttribute("type", "radio");
+      choiceInput.setAttribute("name", `question-${i}`);
+      choiceInput.setAttribute("value", choice);
+      choiceInput.id = `question-${i}-choice-${j}`;
+
+      // If user has previously selected this choice, mark it as checked
+      if (userAnswers[i] === choice) {
+        choiceInput.checked = true;
+      }
+
+      // Event listener for when a choice is selected
+      choiceInput.addEventListener("change", function () {
+        userAnswers[i] = choice;
+        sessionStorage.setItem("progress", JSON.stringify(userAnswers));
+      });
+
+      const choiceLabel = document.createElement("label");
+      choiceLabel.setAttribute("for", choiceInput.id);
+      choiceLabel.textContent = choice;
+
+      choiceContainer.appendChild(choiceInput);
+      choiceContainer.appendChild(choiceLabel);
+      questionContainer.appendChild(choiceContainer);
+    }
+
+    questionsElement.appendChild(questionContainer);
   }
 }
 
-// Function to handle form submission
-function handleFormSubmit(event) {
-  event.preventDefault(); // Prevent form from submitting normally
-
-  const fontSizeInput = document.getElementById("fontsize");
-  const fontColorInput = document.getElementById("fontcolor");
-
-  let fontSize = parseInt(fontSizeInput.value, 10);
-  const fontColor = fontColorInput.value;
-
-  // Validate font size
-  if (isNaN(fontSize) || fontSize < 8) {
-    fontSize = 8;
-  } else if (fontSize > 72) {
-    fontSize = 72;
+// Function to calculate and display score
+function calculateScore() {
+  let score = 0;
+  for (let i = 0; i < questions.length; i++) {
+    if (userAnswers[i] === questions[i].answer) {
+      score++;
+    }
   }
-
-  // Apply the preferences to CSS variables
-  document.documentElement.style.setProperty("--fontsize", fontSize + "px");
-  document.documentElement.style.setProperty("--fontcolor", fontColor);
-
-  // Save preferences in cookies for 30 days
-  setCookie("fontsize", fontSize, 30);
-  setCookie("fontcolor", fontColor, 30);
-
-  alert("Preferences saved successfully!");
+  return score;
 }
 
-// Initialize the page
-document.addEventListener("DOMContentLoaded", function () {
-  applyPreferences(); // Apply saved preferences on page load
+// Event listener for submit button
+submitButton.addEventListener("click", function () {
+  // Check if all questions have been answered
+  const allAnswered = userAnswers.every((answer) => answer !== null);
+  if (!allAnswered) {
+    alert("Please answer all questions before submitting the quiz.");
+    return;
+  }
 
-  const form = document.getElementById("preferences-form");
-  form.addEventListener("submit", handleFormSubmit); // Attach event listener to form
+  const score = calculateScore();
+  scoreElement.textContent = `Your score is ${score} out of ${questions.length}.`;
+  localStorage.setItem("score", score);
+
+  // Optionally, you can disable the submit button after submission
+  submitButton.disabled = true;
 });
+
+// Initial render of questions
+renderQuestions();
