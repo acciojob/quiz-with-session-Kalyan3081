@@ -1,41 +1,49 @@
-:root {
-  --fontsize: 16px;
-  --fontcolor: #000000;
-}
-
+/*  your css code here. If applicable */
 body {
-  font-size: var(--fontsize);
-  color: var(--fontcolor);
   font-family: Arial, sans-serif;
   margin: 20px;
+  background-color: #f4f4f4;
 }
 
-form {
-  max-width: 300px;
+h1 {
+  text-align: center;
+  color: #333;
 }
 
-label {
-  display: block;
+.question-container {
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.choice-container {
+  margin-left: 20px;
   margin-bottom: 5px;
 }
 
-input[type="number"],
-input[type="color"] {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 15px;
-  box-sizing: border-box;
-}
-
-input[type="submit"] {
-  padding: 10px 20px;
-  background-color: #4caf50;
+#submit {
+  display: block;
+  width: 100px;
+  margin: 20px auto;
+  padding: 10px;
+  background-color: #28a745;
+  color: #fff;
   border: none;
-  color: white;
+  border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
 }
 
-input[type="submit"]:hover {
-  background-color: #45a049;
+#submit:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+#score {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+  color: #333;
 }
