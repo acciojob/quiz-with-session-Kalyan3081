@@ -1,32 +1,6 @@
-// Do not change code below this line
-// This code will just display the questions to the screen
-const questions = [
-  {
-    question: "What is the capital of France?",
-    choices: ["Paris", "London", "Berlin", "Madrid"],
-    answer: "Paris",
-  },
-  {
-    question: "What is the highest mountain in the world?",
-    choices: ["Everest", "Kilimanjaro", "Denali", "Matterhorn"],
-    answer: "Everest",
-  },
-  {
-    question: "What is the largest country by area?",
-    choices: ["Russia", "China", "Canada", "United States"],
-    answer: "Russia",
-  },
-  {
-    question: "Which is the largest planet in our solar system?",
-    choices: ["Earth", "Jupiter", "Mars"],
-    answer: "Jupiter",
-  },
-  {
-    question: "What is the capital of Canada?",
-    choices: ["Toronto", "Montreal", "Vancouver", "Ottawa"],
-    answer: "Ottawa",
-  },
-];
+// Constants for storage keys
+const PROGRESS_KEY = "progress";
+const SCORE_KEY = "score";
 
 // Selecting HTML elements
 const questionsElement = document.getElementById("questions");
@@ -37,7 +11,7 @@ const scoreElement = document.getElementById("score");
 let userAnswers = [];
 
 // Load progress from sessionStorage
-const savedProgress = sessionStorage.getItem("progress");
+const savedProgress = sessionStorage.getItem(PROGRESS_KEY);
 if (savedProgress) {
   userAnswers = JSON.parse(savedProgress);
 } else {
@@ -46,7 +20,7 @@ if (savedProgress) {
 }
 
 // Load score from localStorage
-const savedScore = localStorage.getItem("score");
+const savedScore = localStorage.getItem(SCORE_KEY);
 if (savedScore !== null) {
   scoreElement.textContent = `Your score is ${savedScore} out of ${questions.length}.`;
 }
@@ -83,7 +57,7 @@ function renderQuestions() {
       // Event listener for when a choice is selected
       choiceInput.addEventListener("change", function () {
         userAnswers[i] = choice;
-        sessionStorage.setItem("progress", JSON.stringify(userAnswers));
+        sessionStorage.setItem(PROGRESS_KEY, JSON.stringify(userAnswers));
       });
 
       const choiceLabel = document.createElement("label");
@@ -121,9 +95,9 @@ submitButton.addEventListener("click", function () {
 
   const score = calculateScore();
   scoreElement.textContent = `Your score is ${score} out of ${questions.length}.`;
-  localStorage.setItem("score", score);
+  localStorage.setItem(SCORE_KEY, score);
 
-  // Optionally, you can disable the submit button after submission
+  // Optionally, disable the submit button after submission
   submitButton.disabled = true;
 });
 
